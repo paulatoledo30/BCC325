@@ -115,11 +115,18 @@ class DFSAgent(Agent):
         # If the agent is not stuck
         if viable_neighbors:
             for neighbor in viable_neighbors:
-                teste = True
+                #visitados
+                visited = True
                 for aux in self.visited:
                     if (neighbor == aux).all():
-                        teste = False
-                if teste == True:
+                        visited = False
+                #ciclos
+                cycle = True
+                for p in path:
+                    if (neighbor == p).all():
+                        cycle = False
+
+                if visited == True and cycle == True:
                     self.frontier = [path + [neighbor]] + self.frontier
 
     def run(self):
@@ -180,12 +187,19 @@ class BFSAgent(Agent):
         # If the agent is not stuck
         if viable_neighbors:
             for neighbor in viable_neighbors:
-                teste = True
+                #visitados
+                visited = True
                 for aux in self.visited:
                     if (neighbor == aux).all():
-                        teste = False
-                if teste == True:
-                    self.frontier = self.frontier + [path + [neighbor]]
+                        visited = False
+                #ciclos
+                cycle = True
+                for p in path:
+                    if (neighbor == p).all():
+                        cycle = False
+
+                if visited == True and cycle == True:
+                    self.frontier = [path + [neighbor]] + self.frontier
 
     def run(self):
         """Keeps the agent acting until it finds the target
@@ -224,10 +238,8 @@ class GreedyAgent(Agent):
     def act(self):
         """Implements the agent action
         """
-
         # Select a path from the frontier
         path = self.frontier.pop(0)
-        
         
         # Visit the last node in the path
         action = {'visit_position': path[-1], 'path': path} 
@@ -251,11 +263,22 @@ class GreedyAgent(Agent):
             for neighbor in viable_neighbors:
                 n_min = max(distances)
                 n_pos = distances.index(n_min)
+
                 insertFrontier = True
+
+                #ciclos
+                for cycle in path:
+                    if(viable_neighbors[n_pos] == cycle).all():
+                        insertFrontier = False
+                        break
+
+                #visitados
                 for aux in self.visited:
                     if (viable_neighbors[n_pos] == aux).all():
                         insertFrontier = False
-                if insertFrontier == True:
+                        break
+
+                if insertFrontier:
                     self.frontier = [
                         path + [viable_neighbors[n_pos]]] + self.frontier
 
