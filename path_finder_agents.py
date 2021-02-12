@@ -195,6 +195,80 @@ class BFSAgent(Agent):
             self.act()
         print(self.percepts['current_position'])
 
+class GreedyAgent(Agent):
+    """
+    This class implements an agent that explores the environmente randomly
+    until it reaches the target
+    """
+
+    def __init__(self, env, bound=100):
+        """Connects to the next available port.
+
+        Args:
+            env: A reference to an environment.
+
+        """
+
+        # Make a connection to the environment using the superclass constructor
+        Agent.__init__(self,env)
+        
+        # Get initial percepts
+        self.percepts = env.initial_percepts()
+        
+        # Initializes the frontier with the initial postion 
+        self.frontier = [[self.percepts['current_position']]]
+        
+        # Initializes list of visited nodes for multiple path prunning
+        self.visited = []
+
+    def act(self):
+        """Implements the agent action
+        """
+
+        # Select a path from the frontier
+        path = self.frontier.pop(0)
+        
+        
+        # Visit the last node in the path
+        action = {'visit_position': path[-1], 'path': path} 
+        # The agente sends a position and the full path to the environment, the environment can plot the path in the room 
+        self.percepts = self.env.signal(action)
+
+        # Add visited node
+        self.visited.append(path[-1])
+
+        # From the list of viable neighbors given by the environment
+        # Select a random neighbor that has not been visited yet
+            
+        viable_neighbors =  self.percepts['neighbors']
+
+        if viable_neighbors:
+            distances = []
+            for neighbor in viable_neighbors:
+                distances.append(distance.euclidean(
+                    neighbor, self.percepts['target']))
+
+            for neighbor in viable_neighbors:
+                n_min = max(distances)
+                n_pos = distances.index(n_min)
+                insertFrontier = True
+                for aux in self.visited:
+                    if (viable_neighbors[n_pos] == aux).all():
+                        insertFrontier = False
+                if insertFrontier == True:
+                    self.frontier = [
+                        path + [viable_neighbors[n_pos]]] + self.frontier
+
+                distances[n_pos] = -99999
+
+    def run(self):
+        """Keeps the agent acting until it finds the target
+        """
+        # Run agent
+        while (self.percepts['current_position'] != self.percepts['target']).any() and self.frontier:
+            self.act()
+        print(self.percepts['current_position'])
+
 class BBAgent(Agent):
     """
     This class implements an agent that finds the minimum distance path using branch and bound
