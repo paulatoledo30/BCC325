@@ -86,7 +86,12 @@ class Sudoku(Environment):
 
     # TODO
     def apply_GAC(self):
-        pass
+        to_do=[]
+        for row in self.csp:
+            for cell in row:
+                for cons in cell['C']:
+                    to_do.append({'X': cell['X'], 'C':cons})
+
         
 def is_viable(sudoku, i, j, v):
     ''' Auxiliary method that verifies whether a value, v, can be assigned to position [i,j] in the sudoku

@@ -37,16 +37,17 @@ class SudokuAgent(Agent):
                         
                         if self.percepts['is_viable']:
                             self.sudoku[i][j] = v
-
+                            '''
                             if self.print_iterations:
                                 pp_sudoku(self.sudoku)
                                 system('cls')
-
+                            '''
                             self.act()
                             self.sudoku[i][j] = 0
                     return
-
+        input('Solved - Press ENTER to see solution')
         pp_sudoku(self.sudoku)
+        input('Press ENTER to get out of here')
 
 
 def pp_sudoku(sudoku):
@@ -65,5 +66,4 @@ def pp_sudoku(sudoku):
                 row = row + '|'
             row = row + ' ' + str(sudoku[i][j]) + ' '
         print(row + '|',flush=True)
-
     print('-------------------------------',flush=True)
