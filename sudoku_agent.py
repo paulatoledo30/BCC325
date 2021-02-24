@@ -58,12 +58,12 @@ def pp_sudoku(sudoku):
 
     for i in range(len(sudoku)):
         if i % 3 == 0:
-            print('-------------------------------')
+            print('-------------------------------',flush=True)
         row = ''
         for j in range(len(sudoku[0])):
             if j % 3 == 0:
                 row = row + '|'
             row = row + ' ' + str(sudoku[i][j]) + ' '
-        print(row + '|')
+        print(row + '|',flush=True)
 
-    print('-------------------------------')
+    print('-------------------------------',flush=True)
