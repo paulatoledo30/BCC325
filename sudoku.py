@@ -92,7 +92,46 @@ class Sudoku(Environment):
                 for cons in cell['C']:
                     to_do.append({'X': cell['X'], 'C':cons})
 
-        
+                ''' Runs until to_do is empty
+        '''
+        while to_do:
+            arc = to_do.pop(0)  # Removing an arc
+
+            scope = arc['C'].scope.copy()
+            scope.remove(arc['X'])
+
+            x, y = arc['X']
+
+            try:
+                domain_1 = self.csp[x][y]['D'].copy()
+                domain_2 = self.csp[scope[0][0]][scope[0][1]]['D']
+            except TypeError:
+                domain_2 = scope
+
+            for a in domain_1:
+                removeValue = True
+                for b in domain_2:
+                    if arc['C'].condition(a, b):
+                        removeValue = False
+                        break
+                if removeValue:
+                    # Pruning domain
+                    domain_1.remove(a)
+
+            if self.csp[x][y]['D'] == domain_1:
+                continue
+
+            self.csp[x][y]['D'] = domain_1
+
+            for const in self.csp[x][y]['C']:
+                scope_aux = const.scope.copy()
+                scope_aux.remove(arc['X'])
+
+                # Refreshing to_do list if needed
+                if scope_aux[0] != self.csp[scope[0][0]][scope[0][1]]['X']:
+                    cell = {'X': scope_aux[0], 'C': const}
+                    to_do.append(cell) if cell not in to_do else to_do
+                    
 def is_viable(sudoku, i, j, v):
     ''' Auxiliary method that verifies whether a value, v, can be assigned to position [i,j] in the sudoku
 
