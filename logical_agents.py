@@ -10,7 +10,24 @@ class LogicalAgent():
         Returns:
             A list with all the logical consequences of KB
         '''
-        pass
+        C = []
+
+        for ask in self.KB.askables:
+            if ask not in C:
+                x = True if input(f'atom {ask.atom} is true (y or n)? ') == 'y' else False
+
+                if x:
+                    C.append(ask.atom)
+
+        while True:
+            select = False
+            for clause in self.KB.clauses:
+                if clause.head not in C and (all(map(lambda x: x in C, clause.body))):
+                    C.append(clause.head)
+                    select = True
+            if select == False:
+                break
+        return C
 
     # TODO
     def top_down(self,query):
