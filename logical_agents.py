@@ -2,6 +2,7 @@ class LogicalAgent():
 
     def __init__(self,KB):
         self.KB = KB
+        self.askable_atoms = [a.atom for in KB.askables]
 
     # TODO
     def bottom_up(self):
@@ -45,7 +46,7 @@ class LogicalAgent():
         pass
     
     # TODO
-    def explain(self,g):
+    def explain(self, g, explanation = set()):
         '''Implements the process of abductions. It tries to explain the atoms  in the list g using
          the assumable in KB.
 
@@ -55,4 +56,30 @@ class LogicalAgent():
         Returns:
             A list of explanation for the atoms in g
         '''
-        pass
+        if g:
+            selected = g[0]
+            if selected in self.KB.askables:
+                if self.ask_askable(selected):
+                    return self.explain(g[1:], explanation)
+                else:
+                    return []
+            elif selected in self.KB.assumables:
+                return self.explain(g[1:], explanation | {selected})
+            else:
+                l = []
+                for clause in self.KB.clauses_for_atom(selected):
+                    l = l + self.explain(clause.body + g[1:], explanation)
+
+                return l
+        else:
+            return [explanation]
+
+    def yes(ans):
+        """ Returns true if answer is yes
+        """
+        return ans.lower() in ['sim','s','yes','y']
+
+    def ask_askable(atom):
+        """ Asks if atom is true
+        """
+        return input('Is {} true?'.format(atom))
