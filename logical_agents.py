@@ -32,18 +32,39 @@ class LogicalAgent():
 
     # TODO
     def top_down(self,query):
-        '''Implements the top down proof strategy. Given a query (the atom that it wants to prove) 
-        it returns True if the query is a consequence of the knowledge base. 
-        
+               '''Implements the top down proof strategy. Given a query (the atom that it wants to prove)
+        it returns True if the query is a consequence of the knowledge base.
+
         Args:
             querry: The atom that should be proved
-
-        Returns: 
+        Returns:
             True if the query is a logical consequence of KB, False otherwise
-
         '''
-        
-        pass
+        to_prove = query
+
+        while to_prove != []:
+            findClause = False
+
+            for statement in self.KB.statements:
+                if isinstance(statement, Clause):
+                    if statement.head == to_prove[0]:
+                        to_prove.pop(0)
+                        to_prove = statement.body + to_prove
+                        findClause = True
+                        break
+
+                if isinstance(statement, Askable):
+                    if statement.atom == to_prove[0]:
+                        x = True if input(f'atom {statement.atom} is true (y or n)? ') == 'y' else False
+                        if x:
+                            to_prove.pop(0)
+                            findClause = True
+                            break
+
+            if findClause == False:
+                return False
+
+        return True
     
     # TODO
     def explain(self, g, explanation = set()):
